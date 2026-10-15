@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1200">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>DJ Tool - 2-Channel All-in-One Mixer (YouTube, Spotify &amp; local files)</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="fileBanner" class="banner" hidden>
+  You opened this page as a file. YouTube players usually refuse to load that way (error 153).
+  Please run <b>start.bat</b> and use <b>http://localhost:5500</b> instead.
+</div>
+<div id="apiBanner" class="banner warn" hidden></div>
+
+<div id="fit">
+<div id="stage">
+
+  <!-- main chassis: decks, mixer and top strips are built by js/app.js -->
+  <div id="chassis">
+    <div class="deck-ctl" id="deck-A" data-deck="A"></div>
+    <div class="mixer" id="mixer"></div>
+    <div class="deck-ctl" id="deck-B" data-deck="B"></div>
+  </div>
+
+  <!-- browse module on the right of the screen -->
+  <div id="module"></div>
+
+  <!-- raised, tilted touchscreen -->
+  <div id="screen">
+    <div class="scr-lip"><span>DJ TOOL &nbsp;|&nbsp; 2-CHANNEL ALL-IN-ONE</span></div>
+    <div class="scr-tabs" id="tabs" role="tablist">
+      <button type="button" class="tab active" data-view="source" role="tab" title="Waveforms and track panels">SOURCE</button>
+      <button type="button" class="tab" data-view="history" role="tab" title="History of loaded links, both decks">BROWSE</button>
+      <button type="button" class="tab deco" data-view="" title="Not available in the web version" tabindex="-1">TAG LIST</button>
+      <button type="button" class="tab" data-view="queue" role="tab" title="Queued links, both decks">PLAYLIST</button>
+      <button type="button" class="tab deco" data-view="" title="Not available in the web version" tabindex="-1">SEARCH</button>
+      <button type="button" class="tab deco" data-view="" title="Not available in the web version" tabindex="-1">MENU</button>
+    </div>
+    <div class="scr-body">
+      <div class="scr-status"><span class="scr-clock" id="scrMode">SOURCE</span><span id="status" class="status" aria-live="polite"></span></div>
+      <div class="scr-view mode-source" id="view">
+        <div class="waves" id="waves">
+          <div class="wv" id="wave-A" data-deck="A"></div>
+          <div class="wv" id="wave-B" data-deck="B"></div>
+        </div>
+        <div class="lists" id="lists">
+          <div class="lcol" id="lists-A" data-deck="A"></div>
+          <div class="lcol" id="lists-B" data-deck="B"></div>
+        </div>
+      </div>
+      <div class="scr-panels">
+        <section class="tp" id="panel-A" data-deck="A"></section>
+        <section class="tp" id="panel-B" data-deck="B"></section>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<section class="about">
+  <details id="about">
+    <summary>How it works / limits</summary>
+    <ul>
+      <li><b>Three kinds of source per deck:</b> a YouTube / YouTube Music link, a Spotify link, or a <b>local audio file</b> (mp3, wav, m4a, ogg, flac) from your own device. Load a file with the deck's <i>LOAD FILE</i> button, the <i>LOAD 1 / LOAD 2</i> buttons beside the screen, or by dragging it onto the deck or screen.</li>
+      <li><b>Local files get full control.</b> They are decoded in your browser with the Web Audio API and never leave your device (no upload). Real on local decks: play/pause, cue (set / return / hold-to-preview), jog scratch and pitch-bend, tempo fader (changes pitch too, like vinyl), loop in / out / reloop / &frac12;&times; / 2&times;, 8 hot-cue pads (tap to set, tap to jump, Shift + click to delete; saved per file name + size), TRIM, LOW / MID / HI EQ, COLOR filter, channel fader, level meters, a real waveform from the decoded audio, and BEAT FX (echo, flanger, reverb) with TIME, LEVEL/DEPTH, ON/OFF and channel select.</li>
+      <li><b>YouTube &amp; Spotify decks are limited by the official players.</b> Their audio stays inside the embeds, so there is no EQ, COLOR, TRIM, effects, scratching or level meter for them (those knobs dim when such a deck is loaded). YouTube decks do get play/pause, cue, seek, channel-fader volume, tempo (the speeds YouTube allows, 0.25&times;&ndash;2&times;, pitch preserved), repeat, and pads 1&ndash;4 as jump-to-0/25/50/75%. Spotify decks get play/pause, cue, seek and repeat only.</li>
+      <li><b>Crossfader and MASTER level apply to both types:</b> equal-power curve; Spotify embeds can't be faded, so the crossfader and Auto-mix hand them off (start / stop) instead.</li>
+      <li><b>No beat-matching or BPM:</b> there is no BPM detection or SYNC, so those buttons are decorative. The waveform grid, KEY, QUANTIZE, SLIP, MIC, AUX, USB, headphone CUE / MIXING / LEVEL, BOOTH, SOUND COLOR FX buttons and the remaining pad modes are decorative too (tooltip: "Not available in the web version").</li>
+      <li><b>Official players only:</b> nothing from YouTube or Spotify is downloaded, recorded or modified, and no API keys or accounts are needed. Spotify full tracks need you to be logged in to Spotify in this browser, otherwise the embed plays 30-second previews.</li>
+      <li><b>Some videos can't be embedded</b> (the owner disabled it). Playlist "Mix" / radio lists aren't supported by the player API. A watch link that also has <code>&amp;list=</code> loads just that video; use a <code>/playlist?list=</code> link for a whole playlist.</li>
+      <li><b>Autoplay rules:</b> browsers may block sound until you've clicked on the page once.</li>
+      <li><b>Saved in your browser:</b> queue, history, last streaming link per deck, knob / fader positions and hot cues are stored in localStorage on this device only. Local files themselves can't be remembered (the browser doesn't allow it), so load them again after a refresh.</li>
+    </ul>
+    <p class="keys">Keys: <kbd>Q</kbd> play/pause deck 1 &middot; <kbd>P</kbd> play/pause deck 2 &middot; <kbd>&larr;</kbd>/<kbd>&rarr;</kbd> nudge crossfader &middot; <kbd>M</kbd> auto-mix &middot; double-click a knob or fader to reset it</p>
+  </details>
+</section>
+
+<script src="js/ui.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
